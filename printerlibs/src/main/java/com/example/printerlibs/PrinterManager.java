@@ -54,7 +54,7 @@ public class PrinterManager implements Printer{
 
     private PrinterSdk.Printer selectPrinter;
 
-    PrinterManager(Context context){
+    public PrinterManager(Context context){
         this.mContext = context;
     }
 
