@@ -17,7 +17,7 @@ import java.io.InputStream;
 
 public class BitmapHandler {
 
-    InputStream decodedString(Object args) {
+    public static InputStream decodedString(Object args) {
         try {
             JSONObject obj = new JSONObject(String.valueOf(args));
             Object imageReceipt = obj.has("imageReceipt") ? obj.getString("imageReceipt") : "";
@@ -32,7 +32,7 @@ public class BitmapHandler {
 
     }
 
-    Bitmap imageDecode(Object args) {
+    public static Bitmap imageDecode(Object args) {
         try {
             JSONObject obj = new JSONObject(String.valueOf(args));
             Object imageReceipt = obj.has("imageReceipt") ? obj.getString("imageReceipt") : "";

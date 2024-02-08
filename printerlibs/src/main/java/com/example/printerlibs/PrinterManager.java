@@ -2,6 +2,8 @@ package com.example.printerlibs;
 
 
 import static com.example.printerlibs.BitmapHandler.convertGreyImgByFloyd;
+import static com.example.printerlibs.BitmapHandler.decodedString;
+import static com.example.printerlibs.BitmapHandler.imageDecode;
 import static com.example.printerlibs.BitmapHandler.scaleImage;
 import static com.example.printerlibs.BitmapHandler.toGrayscale;
 import static com.example.printerlibs.PrinterModel.Imin.Swift1;
@@ -34,6 +36,10 @@ import com.wisepos.smartpos.WisePosException;
 import com.wisepos.smartpos.WisePosSdk;
 import com.wisepos.smartpos.printer.PrinterListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -203,10 +209,10 @@ public class PrinterManager implements Printer{
                 Looper.prepare();
                 Log.d(Constant.TAG, "printReceiptImin()");
                 try {
-                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
+//                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
-//                    Bitmap image = bitmapHandler.imageDecode(args);
+                    Bitmap bitmap = imageDecode(args);
 
                     IminPrintUtils.getInstance(mContext).printSingleBitmap(bitmap);
                     IminPrintUtils.getInstance(mContext).printAndFeedPaper(255);
@@ -231,16 +237,11 @@ public class PrinterManager implements Printer{
                 Log.d(Constant.TAG, "printReceiptWiseEasy()");
                 try {
                     int result = -1;
-//                    Bitmap image = imageDecode(args);
-//                    JSONObject obj = new JSONObject(String.valueOf(args));
-                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//                    bitmap = toGrayscale(bitmap);
-//                    bitmap = convertGreyImgByFloyd(bitmap);
-                    //Add a bitmap image to the canvas.
+                    Bitmap image = imageDecode(args);
+                    JSONObject obj = new JSONObject(String.valueOf(args));
+
                     mPrinter.setGrayLevel(1);
-//                    result = mPrinter.printImageBase(image, 450, Integer.parseInt(obj.getString("pageHeight")), wangpos.sdk4.libbasebinder.Printer.Align.CENTER, 0);
-                    result = mPrinter.printImageBase(bitmap, 450, 400, wangpos.sdk4.libbasebinder.Printer.Align.CENTER, 0);
+                    result = mPrinter.printImageBase(image, 450, Integer.parseInt(obj.getString("pageHeight")), wangpos.sdk4.libbasebinder.Printer.Align.CENTER, 0);
                     result = mPrinter.printPaper(80);
 //                    image.recycle();
                     if (result == 0) {
@@ -255,7 +256,7 @@ public class PrinterManager implements Printer{
                     }
                     response.onSuccess("printReceiptWiseEasy Success");
 
-                } catch (RemoteException | IOException e) {
+                } catch (RemoteException | JSONException e) {
                     throw new RuntimeException(e);
                 }
                 Looper.loop();
@@ -286,10 +287,9 @@ public class PrinterManager implements Printer{
                         return;
                     }
 
-//                    Bitmap image = imageDecode(args);
-//                    JSONObject obj = new JSONObject(String.valueOf(args));
-                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    Bitmap bitmap = imageDecode(args);
+                    InputStream inputStream = decodedString(args);
+//                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     bitmap = toGrayscale(bitmap);
                     bitmap = convertGreyImgByFloyd(bitmap);
                     //Add a bitmap image to the canvas.
@@ -323,7 +323,7 @@ public class PrinterManager implements Printer{
                     });
 
                     response.onSuccess("printReceiptNano6 Success");
-                } catch (IOException | WisePosException e) {
+                } catch (WisePosException e) {
                     throw new RuntimeException(e);
                 }
                 Looper.loop();
@@ -341,10 +341,11 @@ public class PrinterManager implements Printer{
                 Looper.prepare();
                 Log.d(Constant.TAG, "printReceiptSunmiV2()");
                 try {
-//                    Bitmap image = imageDecode(args);
+                    Bitmap bitmap = imageDecode(args);
 //                    JSONObject obj = new JSONObject(String.valueOf(args));
-                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
+//                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    assert bitmap != null;
                     bitmap = scaleImage(bitmap);
                     //Add a bitmap image to the canvas.
                     CanvasApi api = selectPrinter.canvasApi();
@@ -365,7 +366,7 @@ public class PrinterManager implements Printer{
 
 
                     response.onSuccess("printReceiptNano6 Success");
-                } catch (IOException | SdkException e) {
+                } catch (SdkException e) {
                     throw new RuntimeException(e);
                 }
                 Looper.loop();
