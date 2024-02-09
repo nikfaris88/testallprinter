@@ -3,24 +3,24 @@ plugins {
 }
 
 android {
-    namespace = "com.example.printerlibssampleapp"
-    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.printerlibssampleapp"
-        minSdk = 21
-        targetSdk = 34
+        compileSdkVersion(34)
         versionCode = 1
         versionName = "1.0"
     }
+    val manifestPath: File = File(projectDir, "app/src/main/AndroidManifest.xml")
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            //            manifest = project.file(manifestPath)
+
         }
     }
     compileOptions {
@@ -30,10 +30,8 @@ android {
 }
 
 dependencies {
-
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(files("libs/printerlibs-debug.aar"))
-
 }

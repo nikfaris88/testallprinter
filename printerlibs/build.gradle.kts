@@ -1,23 +1,19 @@
+import org.gradle.api.tasks.InputFile
+
+
 plugins {
     id("com.android.library")
     id("maven-publish")
 }
 
 android {
-    namespace = "com.example.printerlibs"
-    compileSdk = 34
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 34
-        aarMetadata {
-            minCompileSdk = 29
-        }
-        consumerProguardFile("lib-proguard-rules.txt")
+        compileSdkVersion(33)
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -52,23 +48,27 @@ afterEvaluate {
             }
         }
 
-        val generateRepoTask = tasks.register<Zip>("generateRepo") {
-            val publishTask = tasks.named(
-                "publishReleasePublicationToMyrepoRepository",
-                PublishToMavenRepository::class.java
-            )
-            from(publishTask.map { it.repository.url })
-            into("printerlibs")
-            archiveFileName.set("printerlibs.zip")
-        }
-
-        // Assuming you have a custom task named 'publishToMyRepo' for publishing
-        val publishRepoTask = tasks.register("publishRepo") {
-            dependsOn("generateRepoTask")
-        }
+//        val generateRepoTask = tasks.register<Zip>("generateRepo") {
+//            val publishTask = tasks.named(
+//                "publishReleasePublicationToMyrepoRepository",
+//                PublishToMavenRepository::class.java
+//            )
+//            from(publishTask.map { it.repository.url })
+//            into("printerlibs")
+//            archiveFileName.set("printerlibs.zip")
+//        }
+//
+//        // Assuming you have a custom task named 'publishToMyRepo' for publishing
+//        val publishRepoTask = tasks.register("publishRepo") {
+//            dependsOn("generateRepoTask")
+//        }
     }
+
 }
 
+//tasks.named("checkReleaseManifest") {
+//    enabled = false
+//}
 
 dependencies {
     implementation("com.google.android.material:material:1.11.0")
