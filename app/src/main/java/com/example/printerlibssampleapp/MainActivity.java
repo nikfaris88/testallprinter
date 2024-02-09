@@ -14,6 +14,9 @@ public class MainActivity extends AppCompatActivity {
 
     PrinterManager printerManager;
 
+    private TextView txtModel;
+    private TextView txtStatus;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
 
         setPrinterManager();
         initialisePrinter();
+        showStatus();
 
+        txtModel = findViewById(R.id.txtModelName);
+        txtStatus = findViewById(R.id.txtStatus);
+//        Button btnPrint = findViewById(R.id.btnPrint);
+//        btnPrint.setOnClickListener(v -> print());
 
-        Button btnPrint = findViewById(R.id.btnPrint);
-        btnPrint.setOnClickListener(v -> print());
     }
 
     public void setPrinterManager() {
@@ -36,8 +42,12 @@ public class MainActivity extends AppCompatActivity {
         printerManager.initialise();
     }
 
-    public void print() {
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
-        printerManager.print(icon, this);
+    public void print(Object args) {
+        printerManager.print(args, this);
+    }
+
+    public void showStatus(){
+        txtModel.setText(printerManager.getModel());
+        txtStatus.setText(printerManager.response.getResponse());
     }
 }

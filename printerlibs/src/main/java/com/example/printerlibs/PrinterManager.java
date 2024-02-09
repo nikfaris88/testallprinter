@@ -93,12 +93,12 @@ public class PrinterManager implements Printer{
                             result = mPrinter.printInit();
                             mPrinter.clearPrintDataCache();
                             if (result == 0) {
-                                response.onSuccess("Success");
+                                response.onSuccess("Printer init success");
                             } else {
-                                response.onFailed("Failed");
+                                response.onFailed("Printer init failed");
                             }
                         } else {
-                            response.onFailed("Failed");
+                            response.onFailed("Printer init failed");
                         }
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -128,15 +128,15 @@ public class PrinterManager implements Printer{
                     }
                     Log.d(Constant.TAG, "connectType = " + connectType);
 //
-                    int status = iminPrintUtils.getPrinterStatus(connectType);
+                    int printerStatus = iminPrintUtils.getPrinterStatus(connectType);
 
-                    Log.d(Constant.TAG, "STATUS = " + status);
-                    if (status == 0) {
-                        response.onSuccess("Success");
+                    Log.d(Constant.TAG, "STATUS = " + printerStatus);
+                    if (printerStatus == 0) {
+                        response.onSuccess("Printer init success");
                     } else {
-                        response.onSuccess("failed");
+                        response.onFailed("failed");
                         iminPrintUtils.initPrinter(connectType);
-                        response.onSuccess("Success");
+                        response.onSuccess("Printer init success");
                     }
 //                }
 //            }.start();
@@ -149,10 +149,14 @@ public class PrinterManager implements Printer{
                 @Override
                 public void onInitPosSuccess() {
                     Log.d(Constant.TAG, "Nano6 SDK init success ");
+                    response.onSuccess("Printer init success");
+
                 }
 
                 @Override
                 public void onInitPosFail(int i) {
+                    response.onFailed("Printer init failed");
+
                     Log.d(Constant.TAG, "Nano6 SDK init failed ");
                 }
             });
@@ -172,6 +176,7 @@ public class PrinterManager implements Printer{
                     @Override
                     public void onDefPrinter(PrinterSdk.Printer printer) {
                         Log.d(Constant.TAG, "sunmi printer: "+printer);
+                        response.onSuccess("Printer init success");
 
                         selectPrinter = printer;
                     }
@@ -186,6 +191,8 @@ public class PrinterManager implements Printer{
                 response.onError(e);
                 throw new RuntimeException(e);
             }
+        } else {
+            response.onError(new Throwable("ERROR: Printer not found"));
         }
     }
     @Override
