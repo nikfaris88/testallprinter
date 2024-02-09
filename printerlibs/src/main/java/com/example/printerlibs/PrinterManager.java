@@ -216,10 +216,10 @@ public class PrinterManager implements Printer{
                 Looper.prepare();
                 Log.d(Constant.TAG, "printReceiptImin()");
                 try {
-//                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
-//                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
-                    Bitmap bitmap = imageDecode(args);
+//                    Bitmap bitmap = imageDecode(args);
 
                     IminPrintUtils.getInstance(mContext).printSingleBitmap(bitmap);
                     IminPrintUtils.getInstance(mContext).printAndFeedPaper(255);
@@ -293,9 +293,10 @@ public class PrinterManager implements Printer{
                         Log.d(Constant.TAG, "initPrinter() failed!!!" + String.format(" errCode = 0x%x\n", ret[0]));
                         return;
                     }
-
-                    Bitmap bitmap = imageDecode(args);
-                    InputStream inputStream = decodedString(args);
+                    InputStream inputStream = mContext.getAssets().open("ic_launcher_round.png");
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//                    Bitmap bitmap = imageDecode(args);
+//                    InputStream inputStream = decodedString(args);
 //                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     bitmap = toGrayscale(bitmap);
                     bitmap = convertGreyImgByFloyd(bitmap);
@@ -331,6 +332,8 @@ public class PrinterManager implements Printer{
 
                     response.onSuccess("printReceiptNano6 Success");
                 } catch (WisePosException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 Looper.loop();

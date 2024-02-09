@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "PrinterLibsSampleApp"
 include(":app")
 include(":printerlibs")
+include(":libs")
