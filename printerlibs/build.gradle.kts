@@ -35,7 +35,7 @@ afterEvaluate {
             create<MavenPublication>("printerlibs") {
                 groupId = "com.github.nikfaris88"
                 artifactId = "printerlibs"
-                version = "1.0.1"
+                version = "1.0.2"
                 artifact("$buildDir/outputs/aar/printerlibs-release.aar")
             }
         }
