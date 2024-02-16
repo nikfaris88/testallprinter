@@ -1,5 +1,8 @@
 package com.example.printerlibssampleapp;
 
+import static com.example.printerlibs.BitmapHandler.convertGreyImgByFloyd;
+import static com.example.printerlibs.BitmapHandler.toGrayscale;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,6 +12,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.printerlibs.PrinterManager;
+
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,14 +27,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        txtModel = findViewById(R.id.txtModelName);
+        txtStatus = findViewById(R.id.txtStatus);
+
         setPrinterManager();
         initialisePrinter();
         showStatus();
 
-        txtModel = findViewById(R.id.txtModelName);
-        txtStatus = findViewById(R.id.txtStatus);
-//        Button btnPrint = findViewById(R.id.btnPrint);
-//        btnPrint.setOnClickListener(v -> print());
+
+        Button btnPrint = findViewById(R.id.btnPrint);
+
+        btnPrint.setOnClickListener(v -> print(R.drawable.ic_launcher_foreground));
 
     }
 

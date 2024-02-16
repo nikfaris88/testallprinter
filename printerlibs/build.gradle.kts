@@ -1,6 +1,3 @@
-import org.gradle.api.tasks.InputFile
-
-
 plugins {
     id("com.android.library")
     id("maven-publish")
@@ -9,7 +6,8 @@ plugins {
 android {
 
     defaultConfig {
-        compileSdkVersion(33)
+        minSdkVersion(26)
+        compileSdkVersion(34)
     }
 
     buildTypes {
@@ -24,9 +22,10 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+    namespace = "com.example.printerlibs"
 
 
 }
@@ -71,13 +70,13 @@ afterEvaluate {
 //}
 
 dependencies {
-    implementation("com.google.android.material:material:1.11.0")
+//    implementation("com.google.android.material:material:1.11.0")
 
     // iMinPrinterSDK dependencies
     implementation(files("libs/imin/iminPrinterSDK.jar"))
     implementation(files("libs/imin/IminLibs1.0.15.jar"))
     implementation(files("libs/wiseasy/SDK4BaseBinderV2.2.12.jar"))
-    compileOnly(files("libs/wiseasy/WiseSdk_P_1.19_00a_23081701.aar"))
+    implementation(files("libs/wiseasy/WiseSdk.jar"))
 
     // SunmiPrinter dependencies
     implementation ("com.sunmi:printerx:1.0.15")
