@@ -6,6 +6,7 @@ import static com.example.printerlibs.BitmapHandler.toGrayscale;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -37,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnPrint = findViewById(R.id.btnPrint);
 
-        btnPrint.setOnClickListener(v -> print(R.drawable.ic_launcher_foreground));
+        btnPrint.setOnClickListener(v -> print(R.drawable.ic_launcher_foreground, 500));
+
 
     }
 
@@ -46,12 +48,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initialisePrinter() {
-        printerManager.getModel();
         printerManager.initialise();
     }
 
-    public void print(Object args) {
-        printerManager.print(args, this);
+    public void print(Object args, int pageHeight) {
+        printerManager.print(args);
     }
 
     public void showStatus(){

@@ -1,2 +1,0 @@
-configurations.maybeCreate("default")
-artifacts.add("default", file('libs/wiseasy/WiseSdk_P_1.19_00a_23081701.aar'))

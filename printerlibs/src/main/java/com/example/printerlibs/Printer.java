@@ -5,6 +5,6 @@ import android.content.Context;
 public interface Printer {
     String getModel();
     void initialise();
-    void print(Object args, Context context);
+    void print(Object args);
 }
 
