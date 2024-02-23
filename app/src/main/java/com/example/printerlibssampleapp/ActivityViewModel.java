@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.printerlibs.PrinterManager;
-import com.example.printerlibs.Response;
 
 public class ActivityViewModel extends ViewModel implements PrinterManager.PrinterCallback {
 

@@ -32,10 +32,10 @@ android {
 afterEvaluate {
     publishing {
         publications {
-            create<MavenPublication>("printerlibs") {
+            create<MavenPublication>("testallprinter") {
                 groupId = "com.github.nikfaris88"
-                artifactId = "printerlibs"
-                version = "1.0.2"
+                artifactId = "testallprinter"
+                version = "1.0.4"
                 artifact("$buildDir/outputs/aar/printerlibs-release.aar")
             }
         }
