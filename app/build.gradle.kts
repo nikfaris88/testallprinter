@@ -36,4 +36,5 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(files("libs/printerlibs-release.aar"))
+    implementation ("com.sunmi:printerx:1.0.15")
 }

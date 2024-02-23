@@ -6,7 +6,7 @@ plugins {
 android {
 
     defaultConfig {
-        minSdkVersion(26)
+        minSdkVersion(21)
         compileSdkVersion(34)
     }
 
@@ -46,21 +46,6 @@ afterEvaluate {
                 url = uri("${project.buildDir}/testallprinter")
             }
         }
-
-//        val generateRepoTask = tasks.register<Zip>("generateRepo") {
-//            val publishTask = tasks.named(
-//                "publishReleasePublicationToMyrepoRepository",
-//                PublishToMavenRepository::class.java
-//            )
-//            from(publishTask.map { it.repository.url })
-//            into("printerlibs")
-//            archiveFileName.set("printerlibs.zip")
-//        }
-//
-//        // Assuming you have a custom task named 'publishToMyRepo' for publishing
-//        val publishRepoTask = tasks.register("publishRepo") {
-//            dependsOn("generateRepoTask")
-//        }
     }
 
 }
@@ -70,14 +55,10 @@ afterEvaluate {
 //}
 
 dependencies {
-//    implementation("com.google.android.material:material:1.11.0")
-
     // iMinPrinterSDK dependencies
     implementation(files("libs/imin/iminPrinterSDK.jar"))
     implementation(files("libs/imin/IminLibs1.0.15.jar"))
-    implementation(files("libs/wiseasy/SDK4BaseBinderV2.2.12.jar"))
-    implementation(files("libs/wiseasy/WiseSdk.jar"))
-
+    implementation(fileTree(mapOf("dir" to "libs/wiseasy", "include" to listOf("*.jar", "*.aar"))))
     // SunmiPrinter dependencies
-    implementation ("com.sunmi:printerx:1.0.15")
+    implementation("com.sunmi:printerx:1.0.15")
 }

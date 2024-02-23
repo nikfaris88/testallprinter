@@ -2,24 +2,18 @@ package com.example.printerlibs;
 
 public class Response implements IResponse{
 
-    private String response = "";
-
+    String result = "";
     @Override
-    public void onSuccess(String result) {
-        response = result;
+    public void code(int code) {
+
     }
 
     @Override
-    public void onFailed(String result) {
-        response = result;
+    public void message(String result) {
+        this.result = result;
     }
 
-    @Override
-    public void onError(Throwable throwable) {
-        response = throwable.getLocalizedMessage();
-    }
-
-    public String getResponse() {
-        return response;
+    public String getResult(){
+        return result;
     }
 }

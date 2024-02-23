@@ -1,25 +1,17 @@
 package com.example.printerlibssampleapp;
 
-import static com.example.printerlibs.BitmapHandler.convertGreyImgByFloyd;
-import static com.example.printerlibs.BitmapHandler.toGrayscale;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.printerlibs.PrinterManager;
-
-import java.io.InputStream;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 public class MainActivity extends AppCompatActivity {
 
-    PrinterManager printerManager;
-
+    private ActivityViewModel printerViewModel;
     private TextView txtModel;
     private TextView txtStatus;
 
@@ -27,36 +19,55 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         txtModel = findViewById(R.id.txtModelName);
         txtStatus = findViewById(R.id.txtStatus);
-
-        setPrinterManager();
-        initialisePrinter();
-        showStatus();
-
-
         Button btnPrint = findViewById(R.id.btnPrint);
 
-        btnPrint.setOnClickListener(v -> print(R.drawable.ic_launcher_foreground, 500));
+        printerViewModel = new ViewModelProvider(this,
+                new PrinterViewModelFactory()).get(ActivityViewModel.class);
+        printerViewModel.initPrintManager(this);
+        initialisePrinter();
 
+
+        btnPrint.setOnClickListener(v -> print(R.drawable.ic_launcher_foreground));
+
+        showStatus();
 
     }
 
-    public void setPrinterManager() {
-        printerManager = new PrinterManager(this);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        showStatus();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        printerViewModel.getPrinterInitStatus().removeObservers(this);
+        printerViewModel.getPrinterModel().removeObservers(this);
     }
 
     public void initialisePrinter() {
-        printerManager.initialise();
+        printerViewModel.initializePrinter();
     }
 
-    public void print(Object args, int pageHeight) {
-        printerManager.print(args);
+    public void print(Integer args) {
+        printerViewModel.onPrint(args);
     }
 
     public void showStatus(){
-        txtModel.setText(printerManager.getModel());
-        txtStatus.setText(printerManager.response.getResponse());
+        printerViewModel.getPrinterInitStatus().observe(this, result -> {
+            txtStatus.setText("Status: "+result);
+        });
+        printerViewModel.getPrinterModel().observe(this, result -> {
+            txtModel.setText(result);
+        });
     }
 }
