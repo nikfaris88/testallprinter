@@ -1,7 +1,6 @@
 package com.example.printerlibssampleapp;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,7 +12,6 @@ import com.example.printerlibs.Response;
 public class ActivityViewModel extends ViewModel implements PrinterManager.PrinterCallback {
 
     private PrinterManager printerManager;
-    private final MutableLiveData<Response> statusResponse = new MutableLiveData<>();
     private final MutableLiveData<Boolean> printerInitStatus = new MutableLiveData<>();
     private final MutableLiveData<String> printStatus = new MutableLiveData<>();
     private final MutableLiveData<String> printerModel = new MutableLiveData<>();
@@ -73,7 +71,4 @@ public class ActivityViewModel extends ViewModel implements PrinterManager.Print
         return printerModel;
     }
 
-    public LiveData<String> getPrintingStatus() {
-        return printStatus;
-    }
 }
