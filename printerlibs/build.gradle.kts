@@ -10,16 +10,16 @@ android {
         compileSdkVersion(34)
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-
-    }
+//    buildTypes {
+//        getByName("release") {
+//            isMinifyEnabled = false
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//        }
+//
+//    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -47,12 +47,7 @@ afterEvaluate {
             }
         }
     }
-
 }
-
-//tasks.named("checkReleaseManifest") {
-//    enabled = false
-//}
 
 dependencies {
     // iMinPrinterSDK dependencies
@@ -61,4 +56,9 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs/wiseasy", "include" to listOf("*.jar", "*.aar"))))
     // SunmiPrinter dependencies
     implementation("com.sunmi:printerx:1.0.15")
+}
+
+tasks.register<Zip>("assembleAar") {
+    from("$buildDir/outputs/aar/")
+    archiveFileName.set("printerlibs-release.aar")
 }

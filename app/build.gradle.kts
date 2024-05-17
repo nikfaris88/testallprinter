@@ -13,17 +13,17 @@ android {
     }
 //    val manifestPath: File = File(projectDir, "app/src/main/AndroidManifest.xml")
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+//    buildTypes {
+//        getByName("release") {
+//            isMinifyEnabled = false
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
             //            manifest = project.file(manifestPath)
-
-        }
-    }
+//
+//        }
+//    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -36,5 +36,5 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(files("libs/printerlibs-release.aar"))
-    implementation ("com.sunmi:printerx:1.0.15")
+//    implementation ("com.sunmi:printerx:1.0.15")
 }

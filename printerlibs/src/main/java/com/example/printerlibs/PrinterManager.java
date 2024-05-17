@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -28,11 +27,13 @@ import com.sunmi.printerx.style.BitmapStyle;
 import com.wisepos.smartpos.InitPosSdkListener;
 import com.wisepos.smartpos.WisePosException;
 import com.wisepos.smartpos.WisePosSdk;
+import com.wisepos.smartpos.errorcode.WisePosErrorCode;
 import com.wisepos.smartpos.printer.PrinterListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.List;
 
 import wangpos.sdk4.libbasebinder.Printer;
@@ -50,6 +51,10 @@ public class PrinterManager implements IPrinter {
     private static final String sunmiv2 = V2sNC_GL.name();
 
     private PrinterSdk.Printer selectPrinter;
+    public com.wisepos.smartpos.printer.Printer printer;
+
+    private final WisePosSdk wisePosSdk = WisePosSdk.getInstance();
+
 
     public PrinterManager(Activity activity){
         this.mContext = activity;
@@ -158,28 +163,39 @@ public class PrinterManager implements IPrinter {
 
             }
         } else if (printerModel.equalsIgnoreCase(nano6)) {
-            // initialise for NANO6 model
-            Log.d(Constant.TAG, "initialisePrinter(): Nano6");
 
-            WisePosSdk wisePosSdk = WisePosSdk.getInstance();
-            wisePosSdk.initPosSdk(mContext, new InitPosSdkListener() {
-                @Override
-                public void onInitPosSuccess() {
+            if (wisePosSdk.getPrinter().initPrinter() != 0) {
+                Log.d(Constant.TAG, "initialisePrinter(): Nano6");
+                Log.d(Constant.TAG, "wisePosSdk.getPrinter().getPrinterStatus(): "+wisePosSdk.getPrinter().initPrinter());
+                Log.d(Constant.TAG, "MASUUUKKK  1");
 
-                    Log.d(Constant.TAG, "Nano6 SDK init success ");
-                    callback.onPrinterInitSuccess();
+                wisePosSdk.initPosSdk(mContext, new InitPosSdkListener() {
 
-                }
+                    @Override
+                    public void onInitPosSuccess() {
 
-                @Override
-                public void onInitPosFail(int i) {
+                        Log.d(Constant.TAG, "Nano6 SDK init success ");
+                        mContext.runOnUiThread(callback::onPrinterInitSuccess);
 
-                    callback.onPrinterInitFailure();
+                    }
 
-                    Log.d(Constant.TAG, "Nano6 SDK init failed ");
-                }
-            });
+                    @Override
+                    public void onInitPosFail(int i) {
+                        mContext.runOnUiThread(callback::onPrinterInitFailure);
+                        Log.d(Constant.TAG, "Nano6 SDK init failed ");
+                    }
+                });
+            } else {
+                mContext.runOnUiThread(callback::onPrinterInitSuccess);
+            }
 
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    Log.d(Constant.TAG, "Nano6 SDK init success ");
+//                    mContext.runOnUiThread(callback::onPrinterInitSuccess);
+//                }
+//            }.start();
         } else if (printerModel.equalsIgnoreCase(sunmiv2)) {
             Log.d(Constant.TAG, "initialisePrinter(): Sunmi");
             new Thread() {
@@ -282,89 +298,99 @@ public class PrinterManager implements IPrinter {
     }
 
     public void printReceiptNano6(Object args, PrinterCallback callback) {
-        com.wisepos.smartpos.printer.Printer printer = WisePosSdk.getInstance().getPrinter();
-        final int[] ret = {printer.initPrinter()};
 
-        new Thread(() -> {
-            Looper.prepare();
-            Log.d(Constant.TAG, "printReceiptNano6()");
-            try {
+       int gray = 3;
+       new Thread() {
+           int ret;
+           @Override
+           public void run() {
+                Log.d(Constant.TAG, "printReceiptNano6()");
 
-                if (ret[0] != 0) {
-                    Log.d(Constant.TAG, "initPrinter() failed!!!" + String.format(" errCode = 0x%x\n", ret[0]));
+               try {
+                   InputStream inputStream = null;
+                   Bitmap bitmap = null;
+                   printer = WisePosSdk.getInstance().getPrinter();
+                   ret = printer.initPrinter();
+                   Log.d(Constant.TAG, "INIT PRINTER");
 
-                    return;
-                }
+                   if (ret != 0) {
+                       Log.d(Constant.TAG, "initPrinter failed = " + String.format(" errCode = 0x%x\n", ret));
+                       return;
+                   }
 
-                ret[0] = printer.setGrayLevel(1);
-                if (ret[0] != 0){
-                    Log.d(Constant.TAG, "initPrinter() failed!!!" + String.format(" errCode = 0x%x\n", ret[0]));
-                    return;
-                }
-                Bitmap bitmap = imageDecode(args);
-                assert bitmap != null;
-                bitmap = toGrayscale(bitmap);
-                bitmap = convertGreyImgByFloyd(bitmap);
-                //Add a bitmap image to the canvas.
-                printer.setGrayLevel(1);
-                printer.addPicture(PRINT_STYLE_CENTER, bitmap);
-                printer.feedPaper(32);
+                   ret = printer.setGrayLevel(1);
+                   if (ret != 0) {
+                       Log.d(Constant.TAG, "startCaching failed" + String.format(" errCode = 0x%x\n", ret));
+                       return;
+                   }
 
-                Bundle printerOption = new Bundle();
+                   bitmap = imageDecode(args);
+                   assert bitmap != null;
+                   bitmap = toGrayscale(bitmap);
+                   bitmap = convertGreyImgByFloyd(bitmap);
 
-                printer.startPrinting(printerOption, new PrinterListener() {
-                    @Override
-                    public void onError(int i) {
-                        mContext.runOnUiThread(()->callback.onPrintFailure("ERROR Print: "+i)) ;
-                    }
+                   ret = printer.initPrinter();
+                   printer.addPicture(PRINT_STYLE_CENTER, bitmap);
+                   printer.feedPaper(32);
+                   Bundle printerOption = new Bundle();
 
-                    @Override
-                    public void onFinish() {
-                        try {
-                            printer.feedPaper(32);
-                        } catch (WisePosException e) {
-                            mContext.runOnUiThread(()->callback.onPrintFailure("ERROR Print: "+e.getMessage())) ;
-                        }
-                    }
+                   printer.startPrinting(printerOption, new PrinterListener() {
+                       @Override
+                       public void onError(int i) {
+                       }
 
-                    @Override
-                    public void onReport(int i) {
-                        //The callback method is reserved and does not need to be implemented
+                       @Override
+                       public void onFinish() {
+                           try {
+                               //After printing, Feed the paper.
+                               printer.feedPaper(32);
+                           } catch (WisePosException e) {
+                               mContext.runOnUiThread(()-> callback.onPrintFailure("Failed"));
 
-                    }
-                });
-            } catch (WisePosException e) {
-                throw new RuntimeException(e);
-            }
-            Looper.loop();
-        }).start();
+                               throw new RuntimeException(e);                           }
+                       }
+                       @Override
+                       public void onReport(int i) {
+                           //The callback method is reserved and does not need to be implemented
+                       }
+
+                   });
+
+               }  catch (WisePosException e) {
+                   mContext.runOnUiThread(()-> callback.onPrintFailure("Failed"));
+
+                   throw new RuntimeException(e);               }
+           }
+       }.start();
     }
 
     public void printReceiptSunmiV2(Object args, PrinterCallback callback) {
-        new Thread(() -> {
-            Log.d(Constant.TAG, "printReceiptSunmiV2()");
-            try {
-                Log.e("logPrint" , "print image clicked > try");
-                LineApi api = selectPrinter.lineApi();
-                Bitmap bitmap = imageDecode(args);
-                if(bitmap != null) {
-                    api.printBitmap(bitmap, BitmapStyle.getStyle().setAlign(Align.CENTER).setAlgorithm(ImageAlgorithm.DITHERING).setWidth(384).setHeight(bitmap.getHeight()));
-                    api.autoOut();
+        new Thread() {
+            public void run() {
+                Log.d(Constant.TAG, "printReceiptSunmiV2()");
+                try {
                     Log.e("logPrint" , "print image clicked > try");
-                    mContext.runOnUiThread(callback::onPrintSuccess);
+                    LineApi api = selectPrinter.lineApi();
+                    Bitmap bitmap = imageDecode(args);
+                    if(bitmap != null) {
+                        api.printBitmap(bitmap, BitmapStyle.getStyle().setAlign(Align.CENTER).setAlgorithm(ImageAlgorithm.DITHERING).setWidth(384).setHeight(bitmap.getHeight()));
+                        api.autoOut();
+                        Log.e("logPrint" , "print image clicked > try");
+                        mContext.runOnUiThread(callback::onPrintSuccess);
 
 
-                } else {
+                    } else {
+                        mContext.runOnUiThread(()-> callback.onPrintFailure("Failed"));
+
+                        throw new RuntimeException();
+                    }
+                } catch (SdkException e) {
                     mContext.runOnUiThread(()-> callback.onPrintFailure("Failed"));
 
-                    throw new RuntimeException();
+                    throw new RuntimeException(e);
                 }
-            } catch (SdkException e) {
-                mContext.runOnUiThread(()-> callback.onPrintFailure("Failed"));
-
-                throw new RuntimeException(e);
             }
-        }).start();
+        }.start();
     }
 
 }
