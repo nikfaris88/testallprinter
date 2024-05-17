@@ -188,14 +188,6 @@ public class PrinterManager implements IPrinter {
             } else {
                 mContext.runOnUiThread(callback::onPrinterInitSuccess);
             }
-
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    Log.d(Constant.TAG, "Nano6 SDK init success ");
-//                    mContext.runOnUiThread(callback::onPrinterInitSuccess);
-//                }
-//            }.start();
         } else if (printerModel.equalsIgnoreCase(sunmiv2)) {
             Log.d(Constant.TAG, "initialisePrinter(): Sunmi");
             new Thread() {
